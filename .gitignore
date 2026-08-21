@@ -1,0 +1,14 @@
+# Arduino Build outputs
+build/
+bin/
+layout.json
+
+# Local config / private settings
+*.local.h
+*.local.ino
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
