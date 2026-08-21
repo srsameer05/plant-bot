@@ -320,16 +320,25 @@ void updateParticles(bool characterWasRedrawn) {
 // =====================================================
 
 void drawWiFiIcon(uint16_t color) {
-  int x = 88;
-  int y = 10;
+  int x = 84;
+  int y = 14;
   
   // Clear the small region first inside the header bounds
-  gfx->fillRect(x - 11, y, 22, 13, C_CARD_BG);
+  gfx->fillRect(x - 2, y - 2, 18, 14, C_CARD_BG);
   
-  // Draw Wi-Fi signal dot + 2 concentric arcs using drawCircleHelper
-  gfx->fillCircle(x, y + 10, 2, color);
-  gfx->drawCircleHelper(x, y + 10, 6, 1 | 2, color);
-  gfx->drawCircleHelper(x, y + 10, 10, 1 | 2, color);
+  // If disconnected, draw a muted diagonal line across the bars
+  if (color == C_TEXT_MUTED) {
+    gfx->fillRect(x, y + 8, 2, 2, C_TEXT_MUTED);
+    gfx->fillRect(x + 4, y + 6, 2, 4, C_TEXT_MUTED);
+    gfx->fillRect(x + 8, y + 4, 2, 6, C_TEXT_MUTED);
+    gfx->fillRect(x + 12, y + 2, 2, 8, C_TEXT_MUTED);
+    gfx->drawLine(x - 1, y + 9, x + 15, y + 1, C_ALERT_RED);
+  } else {
+    gfx->fillRect(x, y + 8, 2, 2, C_MINT);
+    gfx->fillRect(x + 4, y + 6, 2, 4, C_MINT);
+    gfx->fillRect(x + 8, y + 4, 2, 6, C_MINT);
+    gfx->fillRect(x + 12, y + 2, 2, 8, C_MINT);
+  }
 }
 
 void connectWiFi() {
