@@ -2,6 +2,8 @@
 #include <DHT.h>
 #include <Wire.h>
 #include <RTClib.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
 
 // =====================================================
 // CONFIGURATION & PINS
@@ -23,6 +25,10 @@
 
 // SDA = GPIO 21
 // SCL = GPIO 22
+
+#define WIFI_SSID       "YOUR_SSID"      // Change to your WiFi SSID
+#define WIFI_PASSWORD   "YOUR_PASSWORD"  // Change to your WiFi Password
+#define NTFY_TOPIC      "srsameer_plant_bot" // Change to your unique ntfy.sh topic
 
 // =====================================================
 // HARDWARE INSTANCES
@@ -132,6 +138,13 @@ unsigned long lastParticleSpawnTime= 0;
 unsigned long touchUntil           = 0;
 unsigned long nextEyeGazeInterval  = 3000;
 unsigned long blinkInterval        = 4000;
+
+unsigned long lastWifiCheck        = 0;
+const unsigned long WIFI_CHECK_INTERVAL = 20000; // 20 seconds
+
+bool notificationSent              = false;
+unsigned long lastNotificationTime = 0;
+const unsigned long NOTIFICATION_COOLDOWN = 6UL * 60UL * 60UL * 1000UL; // 6 hours
 
 const unsigned long FAST_SENSOR_INTERVAL = 200;  // 5 Hz reads
 const unsigned long SLOW_SENSOR_INTERVAL = 2000; // 2 sec reads (DHT limit)
@@ -303,6 +316,60 @@ void updateParticles(bool characterWasRedrawn) {
 }
 
 // =====================================================
+// WIFI & NOTIFICATIONS
+// =====================================================
+
+void drawWiFiIcon(uint16_t color) {
+  int x = 88;
+  int y = 10;
+  
+  // Clear the small region first inside the header bounds
+  gfx->fillRect(x - 11, y, 22, 13, C_CARD_BG);
+  
+  // Draw Wi-Fi signal dot + 2 concentric arcs using drawCircleHelper
+  gfx->fillCircle(x, y + 10, 2, color);
+  gfx->drawCircleHelper(x, y + 10, 6, 1 | 2, color);
+  gfx->drawCircleHelper(x, y + 10, 10, 1 | 2, color);
+}
+
+void connectWiFi() {
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  Serial.print("Connecting to WiFi...");
+  
+  unsigned long startAttempt = millis();
+  while (WiFi.status() != WL_CONNECTED && millis() - startAttempt < 6000) {
+    delay(200);
+    Serial.print(".");
+  }
+  
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println(" Connected!");
+  } else {
+    Serial.println(" Timeout. Reconnecting in background.");
+  }
+}
+
+void sendPhoneNotification(const char *message) {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    String url = "https://ntfy.sh/" + String(NTFY_TOPIC);
+    http.begin(url);
+    http.addHeader("Content-Type", "text/plain");
+    
+    int httpResponseCode = http.POST(message);
+    if (httpResponseCode > 0) {
+      Serial.print("Notification sent successfully. Code: ");
+      Serial.println(httpResponseCode);
+    } else {
+      Serial.print("Error sending notification: ");
+      Serial.println(http.errorToString(httpResponseCode).c_str());
+    }
+    http.end();
+  }
+}
+
+// =====================================================
 // FLOATING TOP HEADER
 // =====================================================
 
@@ -316,6 +383,9 @@ void drawHeaderBase() {
   gfx->setTextColor(C_MINT);
   gfx->setCursor(16, 14);
   gfx->print("MOA");
+
+  // Initial WiFi status icon (disconnected)
+  drawWiFiIcon(C_TEXT_MUTED);
 }
 
 void updateHeader() {
@@ -326,6 +396,14 @@ void updateHeader() {
     // Software clock fallback
     unsigned long secs = millis() / 1000;
     now = DateTime(F(__DATE__), F(__TIME__)) + TimeSpan(secs);
+  }
+
+  // Update WiFi signal icon dynamically on state change
+  static bool lastWifiState = false;
+  bool currentWifiState = (WiFi.status() == WL_CONNECTED);
+  if (currentWifiState != lastWifiState) {
+    lastWifiState = currentWifiState;
+    drawWiFiIcon(currentWifiState ? C_MINT : C_TEXT_MUTED);
   }
 
   static int lastSecond = -1;
@@ -783,6 +861,12 @@ void chooseExpression() {
   }
   else if (filteredSoil < 25) {
     expression = THIRSTY;
+    // Trigger phone notification with cooldown
+    if (!notificationSent && (millis() - lastNotificationTime >= NOTIFICATION_COOLDOWN || lastNotificationTime == 0)) {
+      sendPhoneNotification("🚨 Your Plant Bot is thirsty! Soil moisture is critically low.");
+      notificationSent = true;
+      lastNotificationTime = millis();
+    }
   }
   else if (filteredTemp > 32) {
     expression = HOT;
@@ -794,6 +878,11 @@ void chooseExpression() {
     expression = EXCITED;
   }
   else {
+    // Reset notification trigger once soil moisture goes back to normal (> 40%)
+    if (filteredSoil > 40) {
+      notificationSent = false;
+    }
+
     // Normal mood shifts
     if (millis() - lastMoodChange >= MOOD_INTERVAL) {
       lastMoodChange = millis();
@@ -969,6 +1058,13 @@ void setup() {
   gfx->fillScreen(C_BACKGROUND);
   drawHeaderBase();
   
+  // Show connection status on screen
+  centerText("Connecting WiFi...", 160, 110, 1, C_TEXT_MUTED);
+  connectWiFi();
+  
+  // Wipe temporary message
+  gfx->fillRect(40, 95, 240, 30, C_BACKGROUND);
+  
   initFilters();
   updateHeader();
   updateSensorsUI(true);
@@ -989,8 +1085,18 @@ void setup() {
 void loop() {
   unsigned long now = millis();
 
-  // 1. Update Clock
+  // 1. Update Clock & WiFi status
   updateHeader();
+
+  // Background WiFi reconnect logic
+  if (now - lastWifiCheck >= WIFI_CHECK_INTERVAL) {
+    lastWifiCheck = now;
+    if (WiFi.status() != WL_CONNECTED) {
+      Serial.println("WiFi disconnected. Reconnecting...");
+      WiFi.disconnect();
+      WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    }
+  }
 
   // 2. Read Sensors on Timers
   if (now - lastFastSensorRead >= FAST_SENSOR_INTERVAL) {
