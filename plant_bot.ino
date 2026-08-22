@@ -1009,8 +1009,11 @@ void checkTouch() {
 
   if (ts.touched()) {
     TS_Point p = ts.getPoint();
-    Serial.printf("Touch Screen Pressed: X=%d, Y=%d, Z=%d\n", p.x, p.y, p.z);
-    screenTouched = true;
+    // Validate pressure Z and coordinates to filter out ghost touches and SPI error readings (e.g., 4095)
+    if (p.z > 400 && p.z < 4000 && p.x > 50 && p.x < 4000 && p.y > 50 && p.y < 4000) {
+      Serial.printf("Touch Screen Pressed: X=%d, Y=%d, Z=%d\n", p.x, p.y, p.z);
+      screenTouched = true;
+    }
   }
 
   bool isTouched = currentTouch || screenTouched;
