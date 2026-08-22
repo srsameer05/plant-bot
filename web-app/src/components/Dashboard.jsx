@@ -19,10 +19,10 @@ export default function Dashboard({
 
   // Chart configuration
   const tabConfigs = {
-    temp: { label: 'Temperature', key: 'temp', min: 0, max: 50, unit: '°C', color: '#d97706' },
-    hum: { label: 'Humidity', key: 'hum', min: 0, max: 100, unit: '%', color: '#7bb882' },
-    soil: { label: 'Soil Moisture', key: 'soil', min: 0, max: 100, unit: '%', color: '#2d5a27' },
-    light: { label: 'Light Level', key: 'light', min: 0, max: 100, unit: '%', color: '#f1c24c' },
+    temp: { label: 'Temperature', key: 'temp', min: 0, max: 50, unit: '°C', color: '#f97316' },
+    hum: { label: 'Humidity', key: 'hum', min: 0, max: 100, unit: '%', color: '#38bdf8' },
+    soil: { label: 'Soil Moisture', key: 'soil', min: 0, max: 100, unit: '%', color: '#bffd05' },
+    light: { label: 'Light Level', key: 'light', min: 0, max: 100, unit: '%', color: '#fbbf24' },
   };
 
   const currentTab = tabConfigs[activeTab];
