@@ -1,29 +1,24 @@
-/* Import Minecraft-style Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+/* Import Modern Premium Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
 /* Reset & Core Styling */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  /* Minecraft typography defaults */
-  font-family: 'VT323', monospace;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   user-select: none;
-  image-rendering: pixelated; /* Enable pixelated rendering for all retro assets/borders */
 }
 
 body {
-  /* Tiled bedrock/stone block style background */
-  background-color: #2b2b2b;
+  /* Colorful space background with blurred organic radial spots */
+  background-color: #080c16;
   background-image: 
-    /* 32px block grids */
-    linear-gradient(90deg, rgba(0,0,0,0.18) 2px, transparent 2px),
-    linear-gradient(rgba(0,0,0,0.18) 2px, transparent 2px),
-    /* Bedrock pixel noise */
-    radial-gradient(rgba(255,255,255,0.01) 1px, transparent 0),
-    radial-gradient(rgba(0,0,0,0.12) 1px, transparent 0);
-  background-size: 32px 32px, 32px 32px, 8px 8px, 4px 4px;
-  color: #e0e0e0;
+    radial-gradient(circle at 80% 15%, rgba(16, 185, 129, 0.08) 0%, transparent 45%),   /* Green glow */
+    radial-gradient(circle at 15% 85%, rgba(6, 182, 212, 0.08) 0%, transparent 45%),    /* Cyan glow */
+    radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.06) 0%, transparent 55%),   /* Violet center */
+    linear-gradient(135deg, #090e1c 0%, #04060d 100%);
+  color: #f8fafc;
   min-height: 100vh;
   overflow-x: hidden;
   display: flex;
@@ -31,89 +26,97 @@ body {
 }
 
 h1, h2, h3, h4, .brand-logo {
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'Outfit', sans-serif;
 }
 
-/* Blocky Retro Scrollbars */
+/* Scrollbars */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #151515;
-  border-left: 2px solid #3c3c3c;
+  background: rgba(0, 0, 0, 0.2);
 }
 ::-webkit-scrollbar-thumb {
-  background: #4a4a4a;
-  border: 2px solid !important;
-  border-color: #8c8c8c #202020 #202020 #8c8c8c !important;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #5c5c5c;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 /* Animations */
 @keyframes breathe {
   0% { transform: translateY(0); }
-  50% { transform: translateY(4px); } /* Blockier bounce */
+  50% { transform: translateY(3px); }
   100% { transform: translateY(0); }
 }
 
 @keyframes floatParticle {
   0% {
-    transform: translateY(0) scale(1);
+    transform: translateY(0) scale(0.7);
     opacity: 0;
   }
   15% {
-    opacity: 1;
+    opacity: 0.95;
   }
   85% {
-    opacity: 1;
+    opacity: 0.95;
   }
   100% {
-    transform: translateY(-40px) translateX(var(--float-x, 8px)) scale(1);
+    transform: translateY(-48px) translateX(var(--float-x, 8px)) scale(1.15);
     opacity: 0;
   }
 }
 
 @keyframes alertPulse {
-  0% { 
-    border-color: #e14444 !important;
-    background-color: #8c1d1d !important;
-  }
-  100% { 
-    border-color: #ff8888 !important;
-    background-color: #5c1010 !important;
-  }
+  0% { box-shadow: 0 0 0 0px rgba(239, 68, 68, 0.35); }
+  100% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+}
+
+@keyframes glowTeal {
+  0% { filter: drop-shadow(0 0 2px rgba(6, 182, 212, 0.4)); }
+  50% { filter: drop-shadow(0 0 12px rgba(6, 182, 212, 0.85)); }
+  100% { filter: drop-shadow(0 0 2px rgba(6, 182, 212, 0.4)); }
+}
+
+@keyframes heartPulse {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.15); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.15); }
+  70% { transform: scale(1); }
 }
 
 .anim-breathe {
-  animation: breathe 1.6s steps(8) infinite; /* Steps animation to feel blocky/frame-by-frame */
+  animation: breathe 3s ease-in-out infinite;
 }
 
 .anim-pulse-heart {
-  animation: heartPulse 1s steps(4) infinite;
+  animation: heartPulse 1.8s infinite;
 }
 
-/* --- MINECRAFT GUI BLOCKS (Inventory container style) --- */
+/* --- PREMIUM GLASSMORPHISM SYSTEM --- */
 .glass-panel {
-  background-color: #2e2e2e !important; /* Dark stone container */
-  border: 4px solid !important;
-  border-color: #5b5b5b #151515 #151515 #5b5b5b !important; /* Outset 3D bevel */
-  box-shadow: inset -2px -2px 0px #090909, inset 2px 2px 0px #828282 !important;
-  border-radius: 0px !important; /* Strictly blocky */
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  padding: 16px;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  box-shadow: 
+    0 4px 30px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05);
 }
 
 .glass-panel-heavy {
-  background-color: #1a1a1a !important; /* Deep dark inventory slot background */
-  border: 4px solid !important;
-  border-color: #101010 #3c3c3c #3c3c3c #101010 !important; /* Inset slot border */
-  box-shadow: inset -2px -2px 0px #2e2e2e, inset 2px 2px 0px #090909 !important;
-  border-radius: 0px !important;
-  backdrop-filter: none !important;
+  background: rgba(10, 15, 28, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.07);
 }
 
 /* Layout Utilities */
@@ -132,158 +135,164 @@ h1, h2, h3, h4, .brand-logo {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
-  padding: 16px;
-  background-color: #2e2e2e;
-  border: 4px solid;
-  border-color: #5b5b5b #151515 #151515 #5b5b5b;
-  box-shadow: inset -2px -2px 0px #090909, inset 2px 2px 0px #828282;
+  padding: 16px 20px;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
 }
 
 .app-title-section {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .app-title-section h1 {
-  font-size: 16px;
-  font-weight: 700;
-  font-family: 'Press Start 2P', monospace;
-  color: #ffdf7a !important; /* Gold Title */
-  text-shadow: 2px 2px 0px #3f351c !important;
-  letter-spacing: 0px;
-  background: none;
-  -webkit-text-fill-color: initial;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin: 0;
 }
 
-/* Minecraft Badges */
+/* Status Badges */
 .status-badge {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 8px;
-  font-weight: 500;
-  padding: 6px 10px;
-  border-radius: 0px !important;
-  background: #4a4a4a !important;
-  border: 3px solid !important;
-  border-color: #8c8c8c #202020 #202020 #8c8c8c !important;
-  box-shadow: inset -1px -1px 0px #050505, inset 1px 1px 0px #c2c2c2 !important;
-  text-shadow: 1px 1px 0px #000;
-  color: #e0e0e0;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: #cbd5e1;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .status-badge.connected {
-  color: #5ffa9a; /* Experience Mint */
-  border-color: #8c8c8c #202020 #202020 #8c8c8c !important;
+  color: #10b981; /* Emerald Green */
+  border-color: rgba(16, 185, 129, 0.25);
+  background: rgba(16, 185, 129, 0.05);
 }
 
 .status-badge.disconnected {
-  color: #ff7676; /* Redstone Red */
+  color: #f43f5e; /* Rose Red */
+  border-color: rgba(244, 63, 94, 0.25);
+  background: rgba(244, 63, 94, 0.05);
 }
 
 .status-badge.simulated {
-  color: #3ed6d6; /* Diamond Blue */
+  color: #06b6d4; /* Cyan */
+  border-color: rgba(6, 182, 212, 0.25);
+  background: rgba(6, 182, 212, 0.05);
 }
 
 .dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 0px !important; /* Square dots! */
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
   background-color: currentColor;
 }
 
 .dot.pulse {
-  animation: heartPulse 1.2s steps(4) infinite;
+  animation: heartPulse 1.5s infinite;
 }
 
-/* Tab Toggle Button Group */
+/* View Toggle Button Group */
 .view-toggle {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   padding: 4px;
-  background: #151515 !important;
-  border: 3px solid #5b5b5b;
-  border-radius: 0px !important;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* --- MINECRAFT BUTTON LANGUAGE --- */
+/* --- INTERACTIVE BUTTONS --- */
 .view-btn, .sim-btn {
-  font-family: 'Press Start 2P', monospace !important;
-  font-size: 8px !important;
-  background-color: #4a4a4a !important;
-  border: 3px solid !important;
-  border-color: #8c8c8c #202020 #202020 #8c8c8c !important;
-  box-shadow: inset -1px -1px 0px #050505, inset 1px 1px 0px #c2c2c2 !important;
-  border-radius: 0px !important;
-  color: #e0e0e0 !important;
-  text-shadow: 1px 1px 0px #000 !important;
-  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 8px 14px;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: none !important; /* Instant snap feel */
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .view-btn:hover, .sim-btn:hover {
-  background-color: #5c5c5c !important;
-  border-color: #b0b0b0 #333333 #333333 #b0b0b0 !important;
-  color: #5ffa9a !important; /* Green highlight text */
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .view-btn.active, .sim-btn.active {
-  background-color: #202020 !important;
-  border-color: #101010 #5c5c5c #5c5c5c #101010 !important; /* Inset pressed border */
-  color: #ffdf7a !important; /* Gold active text */
-  box-shadow: none !important;
+  background: rgba(255, 255, 255, 0.09);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Minecraft Redstone Alert Notification Banner */
+/* Simulator controls buttons row */
+.sim-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 8px 6px;
+}
+
+.sim-btn.active {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(59, 130, 246, 0.15)) !important;
+  border-color: rgba(6, 182, 212, 0.4) !important;
+  color: #38bdf8 !important;
+}
+
+/* Alert Notification Banner */
 .alert-banner {
-  background-color: #8c1d1d !important;
-  border: 4px solid !important;
-  border-color: #ff3333 #4a0d0d #4a0d0d #ff3333 !important;
-  box-shadow: inset -2px -2px 0px #2e0808, inset 2px 2px 0px #ff6666 !important;
-  border-radius: 0px !important;
-  padding: 12px 16px;
+  background: rgba(244, 63, 94, 0.1);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  border-radius: 12px;
+  padding: 14px 18px;
   margin-bottom: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  animation: alertPulse 1s steps(2) infinite alternate;
+  animation: alertPulse 2s infinite;
 }
 
 .alert-message {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 9px;
-  color: #ffffff;
-  text-shadow: 1px 1px 0px #000;
-}
-
-.alert-message span {
-  font-family: 'Press Start 2P', monospace !important;
-  font-size: 8px !important;
-  color: #ffffff !important;
+  gap: 10px;
+  font-weight: 600;
+  color: #fda4af;
+  font-size: 14px;
 }
 
 .alert-close {
-  background: #5c1010 !important;
-  color: #ffffff !important;
-  border: 2px solid !important;
-  border-color: #8c1d1d #2e0808 #2e0808 #8c1d1d !important;
-  padding: 4px 8px !important;
-  font-size: 8px !important;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  transition: all 0.2s;
 }
 
 .alert-close:hover {
-  background: #8c1d1d !important;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* Dashboard Views Layout */
@@ -313,18 +322,15 @@ h1, h2, h3, h4, .brand-logo {
   width: 100%;
 }
 
-/* Obsidian bezel casing */
 .tft-bezel {
   width: 320px;
   height: 240px;
-  border: 10px solid !important;
-  border-color: #2c1a4d #110724 #110724 #2c1a4d !important; /* Obsidian purple-black */
-  background: #09030e !important;
+  background: #1e293b;
+  border: 12px solid #334155;
+  border-radius: 24px;
   box-shadow: 
-    inset -4px -4px 0px #050107, 
-    inset 4px 4px 0px #4e3575, 
-    0 10px 30px rgba(0, 0, 0, 0.6) !important;
-  border-radius: 0px !important;
+    0 15px 35px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
   overflow: hidden;
   position: relative;
   aspect-ratio: 4 / 3;
@@ -333,7 +339,7 @@ h1, h2, h3, h4, .brand-logo {
 .tft-screen {
   width: 100%;
   height: 100%;
-  background-color: #101c2c !important; /* Sleek dark slate #101c2c */
+  background-color: #101c2c;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -344,65 +350,64 @@ h1, h2, h3, h4, .brand-logo {
 /* TFT Header */
 .tft-header {
   height: 32px;
-  background-color: #2e2e2e !important;
-  border: 3px solid !important;
-  border-color: #5b5b5b #151515 #151515 #5b5b5b !important;
-  box-shadow: inset -1px -1px 0px #090909, inset 1px 1px 0px #828282 !important;
-  border-radius: 0px !important;
+  background-color: #213147;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 8px;
+  padding: 0 10px;
   margin-bottom: 6px;
   position: relative;
   z-index: 10;
 }
 
 .tft-logo {
-  font-size: 10px !important;
+  font-size: 14px;
   font-weight: 800;
-  color: #5ffa9a !important; /* Mint */
-  font-family: 'Press Start 2P', monospace !important;
-  text-shadow: 1px 1px 0px #1c4b2e !important;
+  color: #5ffa9a;
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 0.5px;
 }
 
 .tft-heartbeat {
   width: 6px;
   height: 6px;
-  border-radius: 0px !important; /* Square heartbeat */
-  background: #ff7676 !important;
-  margin-left: 4px;
+  border-radius: 50%;
+  background: #f4b3b3;
+  margin-left: 6px;
+  display: inline-block;
 }
 
 .tft-wifi-icon {
-  margin-left: 8px;
+  margin-left: 12px;
+  display: flex;
+  align-items: center;
 }
 
 .tft-header-right {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .tft-time {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 600;
   color: #ffffff;
-  font-family: 'VT323', monospace;
+  font-family: monospace;
 }
 
 .tft-ampm {
-  font-size: 11px;
-  font-family: 'VT323', monospace;
+  font-size: 8px;
   color: #8c9ba5;
 }
 
 .tft-date {
-  font-size: 11px;
-  font-family: 'VT323', monospace;
+  font-size: 8px;
   color: #8c9ba5;
   border-left: 1px solid rgba(255, 255, 255, 0.15);
-  padding-left: 4px;
+  padding-left: 6px;
 }
 
 .tft-face-area {
@@ -423,7 +428,7 @@ h1, h2, h3, h4, .brand-logo {
 .tft-particle {
   position: absolute;
   pointer-events: none;
-  animation: floatParticle 1.4s steps(6) forwards; /* Steps animation */
+  animation: floatParticle 2.2s ease-out forwards;
   z-index: 15;
 }
 
@@ -431,16 +436,14 @@ h1, h2, h3, h4, .brand-logo {
 .tft-sensors-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 2px;
+  gap: 4px;
   height: 58px;
 }
 
 .tft-sensor-card {
-  background-color: #2e2e2e !important;
-  border: 3px solid !important;
-  border-color: #5b5b5b #151515 #151515 #5b5b5b !important;
-  box-shadow: inset -1px -1px 0px #090909, inset 1px 1px 0px #828282 !important;
-  border-radius: 0px !important;
+  background-color: #213147;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -450,66 +453,62 @@ h1, h2, h3, h4, .brand-logo {
 }
 
 .tft-sensor-card.alert {
-  animation: alertPulse 0.5s steps(2) infinite alternate !important;
+  border-color: #e14444;
+  animation: alertPulse 1s infinite alternate;
 }
 
 .tft-sensor-label {
-  font-size: 10px;
-  font-family: 'VT323', monospace;
-  color: #ffdf7a;
+  font-size: 7px;
+  color: #8c9ba5;
   font-weight: 700;
   text-transform: uppercase;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
 }
 
 .tft-sensor-value {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 700;
   color: #ffffff;
-  font-family: 'VT323', monospace !important;
-  margin-bottom: 2px;
+  font-family: 'Outfit', sans-serif;
+  margin-bottom: 4px;
 }
 
 .tft-sensor-gauge {
   width: 56px;
-  height: 8px !important;
-  background: #151515 !important;
-  border: 2px solid #3c3c3c !important;
-  border-radius: 0px !important;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1px;
   overflow: hidden;
   position: relative;
 }
 
 .tft-sensor-gauge-fill {
   height: 100%;
-  border-radius: 0px !important;
-  transition: width 0.3s steps(6) !important;
+  transition: width 0.3s ease;
 }
 
 /* IP Info Tag below device bezel */
 .ip-info-box {
   margin-top: 16px;
-  font-size: 14px;
-  font-family: 'VT323', monospace;
-  color: #8c9ba5;
+  font-size: 11px;
+  color: #94a3b8;
   text-align: center;
   max-width: 320px;
-  line-height: 1.4;
-  background: #2e2e2e;
-  border: 4px solid;
-  border-color: #5b5b5b #151515 #151515 #5b5b5b;
-  box-shadow: inset -2px -2px 0px #090909, inset 2px 2px 0px #828282;
+  line-height: 1.5;
+  background: rgba(15, 23, 42, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   padding: 10px;
-  border-radius: 0px !important;
+  border-radius: 12px;
 }
 
 .ip-info-box code {
-  color: #ffdf7a;
+  color: #fbbf24;
   font-family: monospace;
-  background: #151515;
-  border: 2px solid #5b5b5b;
-  padding: 2px 4px;
-  border-radius: 0px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 2px 5px;
+  border-radius: 4px;
+  word-break: break-all;
 }
 
 /* --- DETAILED DASHBOARD VIEW --- */
@@ -532,44 +531,48 @@ h1, h2, h3, h4, .brand-logo {
   }
 }
 
-/* Redstone block / Item frame styles for main dashboard cards */
+/* Interactive Dashboard Sensor Cards */
 .dashboard-card {
   padding: 20px;
   position: relative;
   overflow: hidden;
-  transition: none !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
 }
 
 .dashboard-card:hover {
-  transform: none !important;
-  border-color: #ffffff #5b5b5b #5b5b5b #ffffff !important; /* Outset border lights up */
+  transform: translateY(-4px) scale(1.01);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 10px 25px -5px rgba(0, 0, 0, 0.3),
+    0 8px 10px -6px rgba(0, 0, 0, 0.3);
 }
 
 .dashboard-card.alert {
-  border-color: #ff3333 #4a0d0d #4a0d0d #ff3333 !important;
-  background: #5c1010 !important;
-  box-shadow: inset -2px -2px 0px #2e0808, inset 2px 2px 0px #ff6666 !important;
+  border-color: rgba(244, 63, 94, 0.35);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.45) 0%, rgba(244, 63, 94, 0.08) 100%);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #ffdf7a; /* Gold subtitle text */
+  color: #94a3b8;
   margin-bottom: 12px;
 }
 
 .card-title {
-  font-family: 'Press Start 2P', monospace !important;
-  font-size: 8px !important;
-  letter-spacing: 0px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
 }
 
 .card-icon {
   width: 20px;
   height: 20px;
-  filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
 }
 
 .card-body {
@@ -580,35 +583,34 @@ h1, h2, h3, h4, .brand-logo {
 }
 
 .card-value {
-  font-size: 36px !important;
+  font-size: 34px;
   font-weight: 800;
-  font-family: 'VT323', monospace !important;
-  letter-spacing: 0px;
-  text-shadow: 2px 2px 0px #000 !important;
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -1px;
 }
 
 .card-unit {
-  font-size: 20px !important;
-  color: #8c9ba5 !important;
-  font-family: 'VT323', monospace !important;
+  font-size: 16px;
+  color: #94a3b8;
+  font-weight: 500;
 }
 
 .card-progress-container {
   width: 100%;
-  height: 12px !important;
-  background: #151515 !important;
-  border: 3px solid #3c3c3c !important;
-  border-radius: 0px !important;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.02);
 }
 
 .card-progress-bar {
   height: 100%;
-  border-radius: 0px !important;
-  transition: width 0.4s steps(10) !important;
+  border-radius: 4px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* History Chart Section (Map/Graph table layout) */
+/* History Chart Section */
 .chart-panel {
   padding: 20px;
 }
@@ -625,35 +627,31 @@ h1, h2, h3, h4, .brand-logo {
 .chart-tabs {
   display: flex;
   gap: 4px;
-  background: #151515 !important;
-  border: 3px solid #5b5b5b;
-  padding: 2px;
-  border-radius: 0px !important;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .chart-tab {
   background: transparent;
   border: none;
-  color: #8c9ba5;
-  padding: 6px 10px;
-  border-radius: 0px !important;
+  color: #94a3b8;
+  padding: 6px 12px;
+  border-radius: 6px;
   cursor: pointer;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 7px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
   font-weight: 600;
-  transition: none !important;
+  transition: all 0.2s ease;
 }
 
 .chart-tab:hover {
   color: #ffffff;
-  background: rgba(255,255,255,0.05);
 }
 
 .chart-tab.active {
-  background: #4a4a4a !important;
-  border: 2px solid !important;
-  border-color: #8c8c8c #202020 #202020 #8c8c8c !important;
-  box-shadow: inset -1px -1px 0px #050505, inset 1px 1px 0px #c2c2c2 !important;
+  background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
 }
 
@@ -662,9 +660,6 @@ h1, h2, h3, h4, .brand-logo {
   width: 100%;
   position: relative;
   margin-top: 10px;
-  background: #151515;
-  border: 3px solid #101010;
-  box-shadow: inset 2px 2px 0px #000;
 }
 
 .chart-svg-elem {
@@ -691,10 +686,10 @@ h1, h2, h3, h4, .brand-logo {
 }
 
 .panel-title {
-  font-size: 10px !important;
+  font-size: 14px;
   font-weight: 700;
   margin-bottom: 16px;
-  color: #ffdf7a !important;
+  color: #ffffff;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -716,49 +711,49 @@ h1, h2, h3, h4, .brand-logo {
 .sim-label-row {
   display: flex;
   justify-content: space-between;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 7px;
-  color: #8c9ba5;
-  font-weight: 500;
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
 }
 
-/* Blocky Minecraft slider bar style */
+/* Premium gradient sliders */
 .sim-slider {
   -webkit-appearance: none;
   width: 100%;
-  height: 14px !important;
-  background: #151515 !important;
-  border: 3px solid #5b5b5b !important;
-  border-radius: 0px !important;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
   outline: none;
 }
 
 .sim-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 14px !important;
-  height: 22px !important;
-  background: #4a4a4a !important;
-  border: 3px solid !important;
-  border-color: #8c8c8c #202020 #202020 #8c8c8c !important;
-  box-shadow: inset -1px -1px 0px #050505, inset 1px 1px 0px #c2c2c2 !important;
-  border-radius: 0px !important;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
   cursor: pointer;
-  margin-top: -2px; /* Center handle vertically */
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.sim-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
 }
 
 .sim-buttons-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  gap: 8px;
   margin-top: 10px;
 }
 
-/* Event Logs panel (Chat panel style) */
+/* Event Logs panel */
 .logs-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   max-height: 240px;
   overflow-y: auto;
   padding-right: 4px;
@@ -768,17 +763,15 @@ h1, h2, h3, h4, .brand-logo {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-family: 'VT323', monospace !important;
-  font-size: 14px !important;
-  padding: 8px 10px;
-  border-radius: 0px !important;
-  background: #151515 !important;
-  border: 3px solid #101010 !important;
-  box-shadow: inset 1px 1px 0px #000;
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .log-time-stamp {
-  color: #8c9ba5;
+  color: #64748b;
   font-family: monospace;
 }
 
@@ -792,36 +785,35 @@ h1, h2, h3, h4, .brand-logo {
 }
 
 .log-expression {
-  padding: 3px 6px;
-  border-radius: 0px !important;
-  font-family: 'Press Start 2P', monospace !important;
-  font-size: 6px !important;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 9px;
   font-weight: 700;
   text-transform: uppercase;
 }
 
-/* Minecraft Mood color tags for logs */
-.mood-happy { background: #3c3c3c !important; border: 2px solid #5ffa9a !important; color: #5ffa9a !important; }
-.mood-curious { background: #3c3c3c !important; border: 2px solid #3ed6d6 !important; color: #3ed6d6 !important; }
-.mood-lazy { background: #3c3c3c !important; border: 2px solid #8c9ba5 !important; color: #8c9ba5 !important; }
-.mood-confused { background: #3c3c3c !important; border: 2px solid #e14444 !important; color: #e14444 !important; }
-.mood-sleepy { background: #3c3c3c !important; border: 2px solid #6efeef !important; color: #6efeef !important; }
-.mood-shy { background: #3c3c3c !important; border: 2px solid #5ffa9a !important; color: #5ffa9a !important; }
-.mood-surprised { background: #3c3c3c !important; border: 2px solid #ffdf7a !important; color: #ffdf7a !important; }
-.mood-thirsty { background: #3c3c3c !important; border: 2px solid #3ed6d6 !important; color: #3ed6d6 !important; }
-.mood-hot { background: #3c3c3c !important; border: 2px solid #f38a8a !important; color: #f38a8a !important; }
-.mood-excited { background: #3c3c3c !important; border: 2px solid #ffdf7a !important; color: #ffdf7a !important; }
-.mood-touch { background: #3c3c3c !important; border: 2px solid #f4b3b3 !important; color: #f4b3b3 !important; }
+/* Mood color tags for logs */
+.mood-happy { background: rgba(16, 185, 129, 0.1); color: #34d399; }
+.mood-curious { background: rgba(6, 182, 212, 0.1); color: #22d3ee; }
+.mood-lazy { background: rgba(148, 163, 184, 0.1); color: #cbd5e1; }
+.mood-confused { background: rgba(244, 63, 94, 0.1); color: #fb7185; }
+.mood-sleepy { background: rgba(139, 92, 246, 0.1); color: #c084fc; }
+.mood-shy { background: rgba(16, 185, 129, 0.1); color: #34d399; }
+.mood-surprised { background: rgba(245, 158, 11, 0.1); color: #fbbf24; }
+.mood-thirsty { background: rgba(6, 182, 212, 0.1); color: #22d3ee; }
+.mood-hot { background: rgba(244, 63, 94, 0.1); color: #fb7185; }
+.mood-excited { background: rgba(245, 158, 11, 0.1); color: #fbbf24; }
+.mood-touch { background: rgba(244, 179, 179, 0.15); color: #f4b3b3; }
 
 /* Custom Eye/Cheek styles */
 .eye-closed-path {
   stroke: #ffdf7a;
-  stroke-width: 3;
-  stroke-linecap: square;
+  stroke-width: 2.5;
+  stroke-linecap: round;
   fill: none;
 }
 .eye-lash-path {
   stroke: #ffdf7a;
-  stroke-width: 2.5;
-  stroke-linecap: square;
+  stroke-width: 2;
+  stroke-linecap: round;
 }
