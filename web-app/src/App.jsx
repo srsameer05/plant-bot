@@ -21,6 +21,19 @@ export default function App() {
       return { x, height, width, bend, delay, duration, color, opacity };
     });
   }, []);
+
+  // Generate 6 large, fluffy clouds drifting in alternate directions using useMemo
+  const clouds = useMemo(() => {
+    return Array.from({ length: 6 }).map((_, i) => {
+      const top = 15 + (i * 38) + (Math.random() * 12); // Spaced vertically
+      const width = 160 + Math.random() * 120; // Bigger clouds: 160px to 280px
+      const opacity = 0.35 + Math.random() * 0.35; // 0.35 to 0.7 opacity
+      const duration = 75 + Math.random() * 65; // Slow drift: 75s to 140s
+      const delay = -(Math.random() * duration); // Random start offset
+      const direction = i % 2 === 0 ? 'Right' : 'Left'; // Alternate directions
+      return { top, width, opacity, duration, delay, direction };
+    });
+  }, []);
   
   // Real-time telemetry data state
   const [telemetry, setTelemetry] = useState({
@@ -382,21 +395,25 @@ export default function App() {
     <div className="app-wrapper">
       {/* Calm Drifting Clouds */}
       <div className="bg-clouds-container">
-        <div className="cloud cloud-1">
-          <svg viewBox="0 0 100 60" width="140" fill="rgba(255,255,255,0.75)">
-            <path d="M 20,40 A 15,15 0 0,1 35,20 A 20,20 0 0,1 70,20 A 15,15 0 0,1 85,40 A 10,10 0 0,1 75,55 L 25,55 A 10,10 0 0,1 20,40 Z" />
-          </svg>
-        </div>
-        <div className="cloud cloud-2">
-          <svg viewBox="0 0 100 60" width="200" fill="rgba(255,255,255,0.6)">
-            <path d="M 20,40 A 15,15 0 0,1 35,20 A 20,20 0 0,1 70,20 A 15,15 0 0,1 85,40 A 10,10 0 0,1 75,55 L 25,55 A 10,10 0 0,1 20,40 Z" />
-          </svg>
-        </div>
-        <div className="cloud cloud-3">
-          <svg viewBox="0 0 100 60" width="110" fill="rgba(255,255,255,0.5)">
-            <path d="M 20,40 A 15,15 0 0,1 35,20 A 20,20 0 0,1 70,20 A 15,15 0 0,1 85,40 A 10,10 0 0,1 75,55 L 25,55 A 10,10 0 0,1 20,40 Z" />
-          </svg>
-        </div>
+        {clouds.map((cloud, idx) => (
+          <div
+            key={idx}
+            className="cloud"
+            style={{
+              top: `${cloud.top}px`,
+              opacity: cloud.opacity,
+              animationName: `floatCloud${cloud.direction}`,
+              animationDuration: `${cloud.duration}s`,
+              animationDelay: `${cloud.delay}s`,
+              animationIterationCount: 'infinite',
+              animationTimingFunction: 'linear'
+            }}
+          >
+            <svg viewBox="0 0 100 60" width={cloud.width} fill="rgba(255,255,255,0.75)">
+              <path d="M 20,40 A 15,15 0 0,1 35,20 A 20,20 0 0,1 70,20 A 15,15 0 0,1 85,40 A 10,10 0 0,1 75,55 L 25,55 A 10,10 0 0,1 20,40 Z" />
+            </svg>
+          </div>
+        ))}
       </div>
 
       {/* Swaying Grass Silhouette at Bottom */}

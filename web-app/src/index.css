@@ -88,34 +88,14 @@ h1, h2, h3, h4, .brand-logo {
   filter: drop-shadow(0 4px 15px rgba(0,0,0,0.02));
 }
 
-.cloud-1 {
-  top: 20px;
-  animation: floatCloud1 75s linear infinite;
-}
-
-.cloud-2 {
-  top: 75px;
-  animation: floatCloud2 110s linear infinite;
-}
-
-.cloud-3 {
-  top: 130px;
-  animation: floatCloud3 90s linear infinite;
-}
-
-@keyframes floatCloud1 {
-  0% { transform: translateX(-160px); }
+@keyframes floatCloudRight {
+  0% { transform: translateX(-350px); }
   100% { transform: translateX(105vw); }
 }
 
-@keyframes floatCloud2 {
+@keyframes floatCloudLeft {
   0% { transform: translateX(105vw); }
-  100% { transform: translateX(-240px); }
-}
-
-@keyframes floatCloud3 {
-  0% { transform: translateX(-120px); }
-  100% { transform: translateX(105vw); }
+  100% { transform: translateX(-350px); }
 }
 
 /* Swaying Grass */
