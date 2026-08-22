@@ -1,5 +1,5 @@
-/* Import Premium Odama Typography */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+/* Import Retrotunes Premium Typography */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&family=Unbounded:wght@700;800;900&display=swap');
 
 /* Reset & Core Styling */
 * {
@@ -16,31 +16,31 @@ body {
   overflow-x: hidden;
 }
 
-/* Typography Classes */
+/* --- RETROTUNES DISPLAY HEADERS (Syne Extra-Wide) --- */
 .display-giant {
-  font-family: 'Outfit', sans-serif;
-  font-size: 5.5rem;
-  font-weight: 900;
+  font-family: 'Syne', sans-serif;
+  font-size: 5rem;
+  font-weight: 800;
   line-height: 0.9;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.04em;
   text-transform: uppercase;
   color: #0b0f19;
 }
 
 .display-large {
-  font-family: 'Outfit', sans-serif;
-  font-size: 3rem;
-  font-weight: 900;
+  font-family: 'Syne', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 800;
   line-height: 0.95;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.03em;
   text-transform: uppercase;
 }
 
 .display-medium {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.8rem;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.6rem;
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   text-transform: uppercase;
 }
 
@@ -71,7 +71,7 @@ body {
   animation: pulseNeon 2s infinite;
 }
 
-/* --- Navigation & Header --- */
+/* --- Navigation & Header (Unbounded geometric details) --- */
 .app-header {
   display: flex;
   justify-content: space-between;
@@ -85,8 +85,8 @@ body {
 }
 
 .brand-logo {
-  font-family: 'Outfit', sans-serif;
-  font-size: 22px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 16px;
   font-weight: 900;
   letter-spacing: -0.03em;
   text-transform: uppercase;
@@ -97,10 +97,10 @@ body {
 }
 
 .brand-logo .logo-dot {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   background-color: #bffd05;
-  border: 2.5px solid #0b0f19;
+  border: 2px solid #0b0f19;
   border-radius: 50%;
 }
 
@@ -110,8 +110,8 @@ body {
 }
 
 .nav-link {
-  font-family: 'Outfit', sans-serif;
-  font-size: 14px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
   color: #575c66;
@@ -148,10 +148,10 @@ body {
   gap: 16px;
 }
 
-/* --- BUTTON SYSTEM --- */
+/* --- BUTTON SYSTEM (Unbounded blocky action links) --- */
 .btn-neon {
-  font-family: 'Outfit', sans-serif;
-  font-size: 13px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
   background-color: #bffd05;
@@ -177,8 +177,8 @@ body {
 }
 
 .btn-dark {
-  font-family: 'Outfit', sans-serif;
-  font-size: 13px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
   background-color: #0b0f19;
@@ -196,8 +196,8 @@ body {
 }
 
 .btn-outline {
-  font-family: 'Outfit', sans-serif;
-  font-size: 13px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
   background: transparent;
@@ -244,8 +244,12 @@ body {
   gap: 32px;
 }
 
+/* Warm Fraunces Italic for storytelling subtitle */
 .hero-subtitle {
-  font-size: 18px;
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-style: italic;
+  font-weight: 400;
   line-height: 1.5;
   color: #575c66;
   max-width: 500px;
@@ -270,8 +274,8 @@ body {
 }
 
 .showcase-stat {
-  font-family: 'Outfit', sans-serif;
-  font-size: 4rem;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 3rem;
   font-weight: 900;
   line-height: 1;
   color: #bffd05;
@@ -308,8 +312,8 @@ body {
 }
 
 .feature-tag {
-  font-family: 'Outfit', sans-serif;
-  font-size: 11px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 9px;
   font-weight: 800;
   text-transform: uppercase;
   color: #0b0f19;
@@ -320,8 +324,11 @@ body {
   border: 1px solid #0b0f19;
 }
 
-.feature-desc {
-  font-size: 14px;
+/* Warm Fraunces details for descriptions */
+.feature-desc, .product-desc {
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  font-style: italic;
   color: #575c66;
   line-height: 1.5;
 }
@@ -387,8 +394,8 @@ body {
   left: 16px;
   background-color: #0b0f19;
   color: #ffffff;
-  font-size: 10px;
-  font-weight: 700;
+  font-size: 8px;
+  font-weight: 800;
   padding: 4px 10px;
   border-radius: 20px;
   text-transform: uppercase;
@@ -403,18 +410,11 @@ body {
 }
 
 .product-title {
-  font-family: 'Outfit', sans-serif;
-  font-size: 18px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 14px;
   font-weight: 800;
   color: #0b0f19;
   text-transform: uppercase;
-}
-
-.product-desc {
-  font-size: 13px;
-  color: #575c66;
-  line-height: 1.4;
-  flex: 1;
 }
 
 .product-footer {
@@ -425,8 +425,8 @@ body {
 }
 
 .product-price {
-  font-family: 'Outfit', sans-serif;
-  font-size: 20px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 16px;
   font-weight: 900;
   color: #0b0f19;
 }
@@ -442,7 +442,9 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-weight: 700;
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 800;
+  font-size: 14px;
   transition: all 0.2s;
   box-shadow: 2px 2px 0px #0b0f19;
 }
@@ -506,9 +508,9 @@ body {
 }
 
 .card-title {
-  font-family: 'Outfit', sans-serif !important;
-  font-size: 13px !important;
-  font-weight: 700 !important;
+  font-family: 'Unbounded', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
   text-transform: uppercase;
 }
 
@@ -520,8 +522,8 @@ body {
 }
 
 .card-value {
-  font-family: 'Outfit', sans-serif !important;
-  font-size: 34px !important;
+  font-family: 'Unbounded', sans-serif !important;
+  font-size: 26px !important;
   font-weight: 900 !important;
   color: #ffffff !important;
 }
@@ -567,12 +569,16 @@ body {
 
 .sim-label-row {
   color: #94a3b8;
+  font-family: 'Unbounded', sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
 }
 
 .panel-title {
-  font-family: 'Outfit', sans-serif !important;
+  font-family: 'Unbounded', sans-serif !important;
   font-weight: 800 !important;
   color: #ffffff !important;
+  font-size: 12px !important;
 }
 
 /* Event Logs inside Dashboard */
@@ -621,10 +627,16 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
+.chart-tab {
+  font-family: 'Unbounded', sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+}
+
 .chart-tab.active {
   background: #bffd05 !important;
   color: #0b0f19 !important;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 /* --- SLIDING CART DRAWER SYSTEM --- */
@@ -670,8 +682,8 @@ body {
 }
 
 .cart-title {
-  font-family: 'Outfit', sans-serif;
-  font-size: 24px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 18px;
   font-weight: 900;
   text-transform: uppercase;
   color: #ffffff;
@@ -725,16 +737,17 @@ body {
 }
 
 .cart-item-name {
-  font-family: 'Outfit', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
 .cart-item-price {
-  font-size: 14px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 12px;
   color: #bffd05;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .cart-qty-control {
@@ -774,16 +787,16 @@ body {
 .summary-row {
   display: flex;
   justify-content: space-between;
-  font-family: 'Outfit', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
 .btn-checkout {
   width: 100%;
-  font-family: 'Outfit', sans-serif;
-  font-size: 14px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 12px;
   font-weight: 900;
   text-transform: uppercase;
   background-color: #bffd05;
