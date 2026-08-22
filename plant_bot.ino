@@ -87,6 +87,9 @@ bool wifiConfigMode = false;
 unsigned long touchStartTime = 0;
 const unsigned long LONG_PRESS_DURATION = 3000; // 3 seconds to trigger WiFi config mode
 
+bool detailedPopupActive = false;
+int popupSensorId = -1;
+
 
 // =====================================================
 // DESIGN SYSTEM - MODERN PALETTE
@@ -1006,15 +1009,15 @@ void checkTouch() {
 
   bool currentTouch = digitalRead(TOUCH_PIN);
   bool screenTouched = false;
+  TS_Point p;
 
   if (ts.touched()) {
-    TS_Point p = ts.getPoint();
+    p = ts.getPoint();
     // Log raw touch coordinates for hardware diagnostics
     Serial.printf("Raw Touch Event -> X=%d, Y=%d, Z=%d\n", p.x, p.y, p.z);
     
     // Validate pressure Z and coordinates to filter out ghost touches and SPI error readings (e.g., 4095)
     if (p.z > 150 && p.z < 4000 && p.x > 20 && p.x < 4000 && p.y > 20 && p.y < 4000) {
-      Serial.printf("Valid Touch Screen Press -> X=%d, Y=%d, Z=%d\n", p.x, p.y, p.z);
       screenTouched = true;
     }
   }
@@ -1023,22 +1026,55 @@ void checkTouch() {
   static bool touchActive = false;
 
   if (isTouched) {
-    if (touchStartTime == 0) {
-      touchStartTime = millis();
-    } else if (millis() - touchStartTime >= LONG_PRESS_DURATION) {
-      startWiFiConfigMode();
-      return;
-    }
-
     if (!touchActive) {
       touchActive = true;
+      
+      // If a popup is active, tap anywhere to dismiss it
+      if (detailedPopupActive) {
+        dismissDetailedPopup();
+        return;
+      }
+      
+      // If the screen was touched, check if the tap falls in the sensor card region
+      if (screenTouched) {
+        // Map raw touch (typically 200-3800) to screen pixel coordinates (0-320, 0-240)
+        int lcdX = map(p.x, 200, 3800, 0, 320);
+        int lcdY = map(p.y, 200, 3800, 0, 240);
+        lcdX = constrain(lcdX, 0, 320);
+        lcdY = constrain(lcdY, 0, 240);
+        
+        Serial.printf("Mapped Touch Point -> X=%d, Y=%d\n", lcdX, lcdY);
+        
+        // Sensor cards region starts at y = 170
+        if (lcdY >= 170) {
+          int sensorId = -1;
+          if (lcdX >= 7 && lcdX <= 79)       sensorId = 0; // TEMP
+          else if (lcdX >= 85 && lcdX <= 157)  sensorId = 1; // HUMID
+          else if (lcdX >= 163 && lcdX <= 235) sensorId = 2; // SOIL
+          else if (lcdX >= 241 && lcdX <= 313) sensorId = 3; // LIGHT
+          
+          if (sensorId != -1) {
+            drawDetailedPopup(sensorId);
+            return;
+          }
+        }
+      }
+      
+      // Default cute touch interaction (heart eyes expression)
       touchUntil = millis() + 2500;
       expression = TOUCH;
       
-      // Draw immediately and spawn a heart shower
       drawCharacter();
       for (int i = 0; i < 3; i++) {
         spawnParticle('H');
+      }
+      
+      touchStartTime = millis();
+    } else {
+      // Long press triggers Wi-Fi config mode (if popup is not open)
+      if (touchStartTime != 0 && millis() - touchStartTime >= LONG_PRESS_DURATION && !detailedPopupActive) {
+        startWiFiConfigMode();
+        return;
       }
     }
   } else {
@@ -1125,6 +1161,137 @@ void printDebugInfo() {
       case TOUCH:     Serial.println("TOUCH"); break;
     }
   }
+}
+
+// =====================================================
+// INTERACTIVE DETAILED POPUPS
+// =====================================================
+
+void drawDetailedPopup(int sensorId) {
+  detailedPopupActive = true;
+  popupSensorId = sensorId;
+  
+  // Draw a popup window overlay in the center of the screen
+  int px = 20;
+  int py = 45;
+  int pw = 280;
+  int ph = 150;
+  
+  gfx->fillRoundRect(px, py, pw, ph, 8, C_CARD_BG);
+  gfx->drawRoundRect(px, py, pw, ph, 8, C_TEAL); // Teal glowing border
+  
+  // Title & Icon
+  gfx->setTextSize(2);
+  gfx->setTextColor(C_GOLD);
+  
+  const char *title = "";
+  char valStr[32];
+  const char *condition = "";
+  const char *action = "";
+  
+  if (sensorId == 0) {
+    title = "TEMPERATURE";
+    snprintf(valStr, sizeof(valStr), "Value: %.1f C", filteredTemp);
+    if (filteredTemp < 18.0) {
+      condition = "COLD";
+      action = "Metabolism slow. Move to warm spot.";
+    } else if (filteredTemp > 30.0) {
+      condition = "HOT";
+      action = "High evaporation. Water more often.";
+    } else {
+      condition = "IDEAL";
+      action = "Temp is optimal for photosynthesis.";
+    }
+  } else if (sensorId == 1) {
+    title = "AIR HUMIDITY";
+    snprintf(valStr, sizeof(valStr), "Value: %.0f %%", filteredHum);
+    if (filteredHum < 40.0) {
+      condition = "DRY AIR";
+      action = "Mist leaves or use humidifier.";
+    } else if (filteredHum > 75.0) {
+      condition = "HUMID";
+      action = "Watch out for mold or fungus.";
+    } else {
+      condition = "COMFORTABLE";
+      action = "Comfortable humidity for growth.";
+    }
+  } else if (sensorId == 2) {
+    title = "SOIL MOISTURE";
+    snprintf(valStr, sizeof(valStr), "Value: %.0f %%", filteredSoil);
+    if (filteredSoil < 30.0) {
+      condition = "DRY / THIRSTY";
+      action = "Please water plant immediately!";
+    } else if (filteredSoil > 80.0) {
+      condition = "OVERWATERED";
+      action = "Halt watering to prevent root rot.";
+    } else {
+      condition = "WELL HYDRATED";
+      action = "Moisture balance is perfect.";
+    }
+  } else if (sensorId == 3) {
+    title = "AMBIENT LIGHT";
+    snprintf(valStr, sizeof(valStr), "Value: %.0f %%", filteredLight);
+    if (filteredLight < 20.0) {
+      condition = "TOO DARK";
+      action = "Move closer to window or add light.";
+    } else if (filteredLight > 80.0) {
+      condition = "VERY BRIGHT";
+      action = "Perfect for sun-loving plants.";
+    } else {
+      condition = "OPTIMAL LIGHT";
+      action = "Excellent indirect sunlight.";
+    }
+  }
+  
+  // Header text
+  centerText(title, 160, py + 12, 1, C_GOLD);
+  gfx->drawFastHLine(px + 15, py + 28, pw - 30, C_CARD_BORDER);
+  
+  // Large Value
+  centerText(valStr, 160, py + 38, 2, C_WHITE);
+  
+  // Condition status
+  char condStr[64];
+  snprintf(condStr, sizeof(condStr), "Status: %s", condition);
+  centerText(condStr, 160, py + 64, 1, (strcmp(condition, "IDEAL") == 0 || strcmp(condition, "COMFORTABLE") == 0 || strcmp(condition, "WELL HYDRATED") == 0 || strcmp(condition, "OPTIMAL LIGHT") == 0) ? C_MINT : C_CORAL);
+  
+  // Detailed Action/Advice
+  gfx->setTextSize(1);
+  gfx->setTextColor(C_LIGHT_CREAM);
+  
+  // Center wrapped description manually
+  int textLen = strlen(action);
+  if (textLen < 32) {
+    centerText(action, 160, py + 86, 1, C_LIGHT_CREAM);
+  } else {
+    // split into two lines
+    char line1[36] = {0};
+    char line2[36] = {0};
+    // Simple split on space near midpoint
+    int splitIdx = 25;
+    while (splitIdx > 10 && action[splitIdx] != ' ') {
+      splitIdx--;
+    }
+    strncpy(line1, action, splitIdx);
+    strcpy(line2, action + splitIdx + 1);
+    centerText(line1, 160, py + 86, 1, C_LIGHT_CREAM);
+    centerText(line2, 160, py + 98, 1, C_LIGHT_CREAM);
+  }
+  
+  // Close instruction
+  centerText("[ Tap Screen to Dismiss ]", 160, py + 124, 1, C_TEXT_MUTED);
+}
+
+void dismissDetailedPopup() {
+  detailedPopupActive = false;
+  popupSensorId = -1;
+  
+  // Redraw the main canvas
+  gfx->fillScreen(C_BACKGROUND);
+  drawHeaderBase();
+  updateHeader();
+  updateSensorsUI(true);
+  drawCharacter();
 }
 
 // =====================================================
@@ -1325,6 +1492,13 @@ void loop() {
   if (wifiConfigMode) {
     dnsServer.processNextRequest();
     server.handleClient();
+    delay(10);
+    return;
+  }
+
+  // If a detailed sensor card popup is active, pause standard loops and only monitor touch dismissal
+  if (detailedPopupActive) {
+    checkTouch();
     delay(10);
     return;
   }
