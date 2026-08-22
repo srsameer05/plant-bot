@@ -11,7 +11,8 @@
 }
 
 body {
-  background-color: #faf7f2; /* Calm Warm Cream */
+  background-color: #e0f2fe; /* Sky Blue */
+  background-image: linear-gradient(180deg, #bae6fd 0%, #f0f9ff 100%);
   color: #2d5a27; /* Forest Green Text */
   min-height: 100vh;
   overflow-x: hidden;
@@ -123,7 +124,7 @@ h1, h2, h3, h4, .brand-logo {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 100px;
+  height: 180px; /* Taller grass container */
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
@@ -145,8 +146,8 @@ h1, h2, h3, h4, .brand-logo {
 }
 
 @keyframes swayGrass {
-  0% { transform: skewX(-2deg) rotate(-0.5deg); }
-  100% { transform: skewX(2.5deg) rotate(0.5deg); }
+  0% { transform: skewX(-6deg) translateX(-15px); }
+  100% { transform: skewX(6deg) translateX(15px); }
 }
 
 /* --- ORGANIC CREAM & SAGE GLASSMORPHISM --- */
