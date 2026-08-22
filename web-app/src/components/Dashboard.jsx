@@ -64,10 +64,10 @@ export default function Dashboard({
         <div className={`glass-panel dashboard-card card-soil ${soilAlert ? 'alert' : ''}`}>
           <div className="card-header">
             <span className="card-title">Soil Moisture</span>
-            <Droplet className="card-icon" style={{ color: soilAlert ? '#ef4444' : '#10b981' }} />
+            <Droplet className="card-icon" style={{ color: soilAlert ? '#ef4444' : '#2d5a27' }} />
           </div>
           <div className="card-body">
-            <span className="card-value" style={{ color: soilAlert ? '#ef4444' : '#10b981' }}>
+            <span className="card-value" style={{ color: soilAlert ? '#ef4444' : '#2d5a27' }}>
               {data.soil !== undefined ? Math.round(data.soil) : '--'}
             </span>
             <span className="card-unit">%</span>
@@ -76,7 +76,8 @@ export default function Dashboard({
             <div 
               className="card-progress-bar" 
               style={{ 
-                width: `${data.soil || 0}%`
+                width: `${data.soil || 0}%`,
+                background: soilAlert ? '#ef4444' : 'linear-gradient(90deg, #6aa363, #356b2e)'
               }}
             />
           </div>
@@ -86,10 +87,10 @@ export default function Dashboard({
         <div className={`glass-panel dashboard-card card-temp ${tempAlert ? 'alert' : ''}`}>
           <div className="card-header">
             <span className="card-title">Temperature</span>
-            <Thermometer className="card-icon" style={{ color: tempAlert ? '#ef4444' : '#f97316' }} />
+            <Thermometer className="card-icon" style={{ color: tempAlert ? '#ef4444' : '#e87d3e' }} />
           </div>
           <div className="card-body">
-            <span className="card-value" style={{ color: tempAlert ? '#ef4444' : '#f97316' }}>
+            <span className="card-value" style={{ color: tempAlert ? '#ef4444' : '#e87d3e' }}>
               {data.temp !== undefined ? data.temp.toFixed(1) : '--'}
             </span>
             <span className="card-unit">°C</span>
@@ -98,7 +99,8 @@ export default function Dashboard({
             <div 
               className="card-progress-bar" 
               style={{ 
-                width: `${Math.min(100, Math.max(0, ((data.temp || 25) / 50) * 100))}%`
+                width: `${Math.min(100, Math.max(0, ((data.temp || 25) / 50) * 100))}%`,
+                background: tempAlert ? '#ef4444' : 'linear-gradient(90deg, #e87d3e, #b23b10)'
               }}
             />
           </div>
@@ -108,10 +110,10 @@ export default function Dashboard({
         <div className="glass-panel dashboard-card card-hum">
           <div className="card-header">
             <span className="card-title">Humidity</span>
-            <Activity className="card-icon" style={{ color: '#06b6d4' }} />
+            <Activity className="card-icon" style={{ color: '#5b9654' }} />
           </div>
           <div className="card-body">
-            <span className="card-value" style={{ color: '#06b6d4' }}>
+            <span className="card-value" style={{ color: '#5b9654' }}>
               {data.hum !== undefined ? Math.round(data.hum) : '--'}
             </span>
             <span className="card-unit">%</span>
@@ -120,7 +122,8 @@ export default function Dashboard({
             <div 
               className="card-progress-bar" 
               style={{ 
-                width: `${data.hum || 0}%`
+                width: `${data.hum || 0}%`,
+                background: 'linear-gradient(90deg, #8cb585, #5b9654)'
               }}
             />
           </div>
@@ -130,10 +133,10 @@ export default function Dashboard({
         <div className="glass-panel dashboard-card card-light">
           <div className="card-header">
             <span className="card-title">Ambient Light</span>
-            <Sun className="card-icon" style={{ color: '#facc15' }} />
+            <Sun className="card-icon" style={{ color: '#d9a706' }} />
           </div>
           <div className="card-body">
-            <span className="card-value" style={{ color: '#facc15' }}>
+            <span className="card-value" style={{ color: '#d9a706' }}>
               {data.light !== undefined ? Math.round(data.light) : '--'}
             </span>
             <span className="card-unit">%</span>
@@ -142,7 +145,8 @@ export default function Dashboard({
             <div 
               className="card-progress-bar" 
               style={{ 
-                width: `${data.light || 0}%`
+                width: `${data.light || 0}%`,
+                background: 'linear-gradient(90deg, #fbbf24, #d9a706)'
               }}
             />
           </div>
