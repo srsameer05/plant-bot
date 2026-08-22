@@ -48,7 +48,7 @@ String wifiPassword = WIFI_PASSWORD;
 #define NTFY_TOPIC      "srsameer_plant_bot" // Change to your unique ntfy.sh topic
 
 // Telemetry Server Config
-#define TELEMETRY_SERVER      "http://10.234.37.172:5000/api/telemetry" // Replace with your computer's local IP on startup
+#define TELEMETRY_SERVER      "http://10.234.37.171:5000/api/telemetry" // Replace with your computer's local IP on startup
 #define TELEMETRY_INTERVAL    5000 // Send data every 5 seconds
 
 // =====================================================
