@@ -85,7 +85,7 @@ h1, h2, h3, h4, .brand-logo {
 
 .cloud {
   position: absolute;
-  filter: drop-shadow(0 4px 15px rgba(0,0,0,0.02));
+  filter: drop-shadow(0 8px 16px rgba(15, 23, 42, 0.08)) drop-shadow(0 2px 4px rgba(15, 23, 42, 0.05));
 }
 
 @keyframes floatCloudRight {
@@ -165,14 +165,14 @@ h1, h2, h3, h4, .brand-logo {
 
 /* --- ORGANIC CREAM & SAGE GLASSMORPHISM --- */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.65); /* Semi-transparent eggshell */
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1.5px solid rgba(235, 220, 203, 0.7); /* Translucent sand border */
+  background: rgba(255, 255, 255, 0.35); /* High transparency frosted glass */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(235, 220, 203, 0.5); /* Ultra-thin translucent border */
   border-radius: 20px;
   box-shadow: 
-    0 8px 30px rgba(45, 90, 39, 0.02),
-    0 2px 4px rgba(45, 90, 39, 0.01);
+    0 8px 32px rgba(45, 90, 39, 0.01),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
   padding: 20px;
   position: relative;
   z-index: 2; /* Elevate above background grass */
@@ -205,10 +205,10 @@ h1, h2, h3, h4, .brand-logo {
   align-items: center;
   margin-bottom: 24px;
   padding: 14px 20px;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1.5px solid rgba(235, 220, 203, 0.7);
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(235, 220, 203, 0.5);
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(45, 90, 39, 0.02);
 }
@@ -300,10 +300,10 @@ h1, h2, h3, h4, .brand-logo {
 }
 
 .view-btn.active {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.4);
   color: #2d5a27;
-  border: 1px solid rgba(235, 220, 203, 0.7);
-  box-shadow: 0 2px 8px rgba(45, 90, 39, 0.04);
+  border: 1px solid rgba(235, 220, 203, 0.5);
+  box-shadow: 0 2px 8px rgba(45, 90, 39, 0.02);
 }
 
 /* Alert Banner */
@@ -529,10 +529,10 @@ h1, h2, h3, h4, .brand-logo {
   text-align: center;
   max-width: 320px;
   line-height: 1.5;
-  background: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1.5px solid rgba(235, 220, 203, 0.7);
+  border: 1.5px solid rgba(235, 220, 203, 0.5);
   padding: 10px;
   border-radius: 12px;
 }
@@ -687,10 +687,10 @@ h1, h2, h3, h4, .brand-logo {
 }
 
 .chart-tab.active {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.4);
   color: #2d5a27;
-  border: 1px solid rgba(235, 220, 203, 0.7);
-  box-shadow: 0 2px 8px rgba(45, 90, 39, 0.04);
+  border: 1px solid rgba(235, 220, 203, 0.5);
+  box-shadow: 0 2px 8px rgba(45, 90, 39, 0.02);
 }
 
 .chart-container {
@@ -780,8 +780,8 @@ h1, h2, h3, h4, .brand-logo {
 }
 
 .sim-btn {
-  background: rgba(255, 255, 255, 0.4);
-  border: 1.5px solid rgba(235, 220, 203, 0.7);
+  background: rgba(255, 255, 255, 0.2);
+  border: 1.5px solid rgba(235, 220, 203, 0.5);
   color: #606b5c;
   padding: 8px 4px;
   border-radius: 16px;
@@ -820,8 +820,8 @@ h1, h2, h3, h4, .brand-logo {
   font-size: 13px;
   padding: 8px 12px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.4);
-  border: 1.5px solid rgba(235, 220, 203, 0.7);
+  background: rgba(255, 255, 255, 0.2);
+  border: 1.5px solid rgba(235, 220, 203, 0.5);
 }
 
 .log-time-stamp {

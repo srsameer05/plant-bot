@@ -22,12 +22,12 @@ export default function App() {
     });
   }, []);
 
-  // Generate 6 large, fluffy clouds drifting in alternate directions using useMemo
+  // Generate 9 large, fluffy clouds drifting in alternate directions using useMemo
   const clouds = useMemo(() => {
-    return Array.from({ length: 6 }).map((_, i) => {
-      const top = 15 + (i * 38) + (Math.random() * 12); // Spaced vertically
-      const width = 160 + Math.random() * 120; // Bigger clouds: 160px to 280px
-      const opacity = 0.35 + Math.random() * 0.35; // 0.35 to 0.7 opacity
+    return Array.from({ length: 9 }).map((_, i) => {
+      const top = 10 + (i * 26) + (Math.random() * 10); // Spaced vertically from 10px to 250px
+      const width = 160 + Math.random() * 125; // Bigger clouds: 160px to 285px
+      const opacity = 0.75 + Math.random() * 0.2; // Highlighted opacity: 0.75 to 0.95
       const duration = 75 + Math.random() * 65; // Slow drift: 75s to 140s
       const delay = -(Math.random() * duration); // Random start offset
       const direction = i % 2 === 0 ? 'Right' : 'Left'; // Alternate directions
@@ -409,7 +409,7 @@ export default function App() {
               animationTimingFunction: 'linear'
             }}
           >
-            <svg viewBox="0 0 100 60" width={cloud.width} fill="rgba(255,255,255,0.75)">
+            <svg viewBox="0 0 100 60" width={cloud.width} fill="rgba(255,255,255,0.9)">
               <path d="M 20,40 A 15,15 0 0,1 35,20 A 20,20 0 0,1 70,20 A 15,15 0 0,1 85,40 A 10,10 0 0,1 75,55 L 25,55 A 10,10 0 0,1 20,40 Z" />
             </svg>
           </div>
