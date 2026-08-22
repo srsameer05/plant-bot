@@ -4,6 +4,12 @@
 #include <RTClib.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <SPI.h>
+#include <XPT2046_Touchscreen.h>
+#include <Preferences.h>
+#include <WebServer.h>
+#include <DNSServer.h>
+
 
 // =====================================================
 // CONFIGURATION & PINS
@@ -23,12 +29,27 @@
 #define LDR_PIN    34
 #define TOUCH_PIN   5
 
+// Touch Controller Pins (XPT2046)
+#define T_CLK      25
+#define T_CS       27
+#define T_DIN      32
+#define T_DO       26
+#define T_IRQ      35
+
+
 // SDA = GPIO 21
 // SCL = GPIO 22
 
-#define WIFI_SSID       "YOUR_SSID"      // Change to your WiFi SSID
-#define WIFI_PASSWORD   "YOUR_PASSWORD"  // Change to your WiFi Password
+#define WIFI_SSID       "ABC"      // Change to your WiFi SSID
+#define WIFI_PASSWORD   "12345678"  // Change to your WiFi Password
+
+String wifiSSID = WIFI_SSID;
+String wifiPassword = WIFI_PASSWORD;
 #define NTFY_TOPIC      "srsameer_plant_bot" // Change to your unique ntfy.sh topic
+
+// Telemetry Server Config
+#define TELEMETRY_SERVER      "http://10.234.37.172:5000/api/telemetry" // Replace with your computer's local IP on startup
+#define TELEMETRY_INTERVAL    5000 // Send data every 5 seconds
 
 // =====================================================
 // HARDWARE INSTANCES
@@ -54,6 +75,18 @@ Arduino_GFX *gfx = new Arduino_ST7789(
 
 DHT dht(DHT_PIN, DHT_TYPE);
 RTC_DS1307 rtc;
+
+SPIClass touchSPI(HSPI);
+XPT2046_Touchscreen ts(T_CS); // Switched to polling mode by removing T_IRQ to avoid issues with floating GPIO 35
+
+Preferences preferences;
+WebServer server(80);
+DNSServer dnsServer;
+
+bool wifiConfigMode = false;
+unsigned long touchStartTime = 0;
+const unsigned long LONG_PRESS_DURATION = 3000; // 3 seconds to trigger WiFi config mode
+
 
 // =====================================================
 // DESIGN SYSTEM - MODERN PALETTE
@@ -145,6 +178,8 @@ const unsigned long WIFI_CHECK_INTERVAL = 20000; // 20 seconds
 bool notificationSent              = false;
 unsigned long lastNotificationTime = 0;
 const unsigned long NOTIFICATION_COOLDOWN = 6UL * 60UL * 60UL * 1000UL; // 6 hours
+
+unsigned long lastTelemetryTime    = 0;
 
 const unsigned long FAST_SENSOR_INTERVAL = 200;  // 5 Hz reads
 const unsigned long SLOW_SENSOR_INTERVAL = 2000; // 2 sec reads (DHT limit)
@@ -343,7 +378,7 @@ void drawWiFiIcon(uint16_t color) {
 
 void connectWiFi() {
   WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  WiFi.begin(wifiSSID.c_str(), wifiPassword.c_str());
   Serial.print("Connecting to WiFi...");
   
   unsigned long startAttempt = millis();
@@ -356,6 +391,48 @@ void connectWiFi() {
     Serial.println(" Connected!");
   } else {
     Serial.println(" Timeout. Reconnecting in background.");
+  }
+}
+
+const char* expressionName(Expression expr) {
+  switch (expr) {
+    case HAPPY: return "HAPPY";
+    case CURIOUS: return "CURIOUS";
+    case LAZY: return "LAZY";
+    case CONFUSED: return "CONFUSED";
+    case SLEEPY: return "SLEEPY";
+    case SHY: return "SHY";
+    case SURPRISED: return "SURPRISED";
+    case THIRSTY: return "THIRSTY";
+    case HOT: return "HOT";
+    case EXCITED: return "EXCITED";
+    case TOUCH: return "TOUCH";
+    default: return "HAPPY";
+  }
+}
+
+void sendTelemetry() {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    http.begin(TELEMETRY_SERVER);
+    http.addHeader("Content-Type", "application/json");
+    http.setTimeout(1500); // Set a short timeout to prevent UI stutters on laggy networks
+    
+    String jsonPayload = "{\"temp\":" + String(filteredTemp, 1) + 
+                         ",\"hum\":" + String(filteredHum, 0) + 
+                         ",\"soil\":" + String((int)filteredSoil) + 
+                         ",\"light\":" + String((int)filteredLight) + 
+                         ",\"expression\":\"" + String(expressionName(expression)) + "\"}";
+                         
+    int httpResponseCode = http.POST(jsonPayload);
+    if (httpResponseCode > 0) {
+      Serial.print("Telemetry sent. Code: ");
+      Serial.println(httpResponseCode);
+    } else {
+      Serial.print("Telemetry error: ");
+      Serial.println(http.errorToString(httpResponseCode).c_str());
+    }
+    http.end();
   }
 }
 
@@ -925,23 +1002,44 @@ void chooseExpression() {
 // =====================================================
 
 void checkTouch() {
-  bool currentTouch = digitalRead(TOUCH_PIN);
-  static bool touchActive = false;
+  if (wifiConfigMode) return;
 
-  if (currentTouch && !touchActive) {
-    touchActive = true;
-    touchUntil = millis() + 2500;
-    expression = TOUCH;
-    
-    // Draw immediately and spawn a heart shower
-    drawCharacter();
-    for (int i = 0; i < 3; i++) {
-      spawnParticle('H');
-    }
+  bool currentTouch = digitalRead(TOUCH_PIN);
+  bool screenTouched = false;
+
+  if (ts.touched()) {
+    TS_Point p = ts.getPoint();
+    Serial.printf("Touch Screen Pressed: X=%d, Y=%d, Z=%d\n", p.x, p.y, p.z);
+    screenTouched = true;
   }
 
-  if (!currentTouch && touchActive) {
-    touchActive = false;
+  bool isTouched = currentTouch || screenTouched;
+  static bool touchActive = false;
+
+  if (isTouched) {
+    if (touchStartTime == 0) {
+      touchStartTime = millis();
+    } else if (millis() - touchStartTime >= LONG_PRESS_DURATION) {
+      startWiFiConfigMode();
+      return;
+    }
+
+    if (!touchActive) {
+      touchActive = true;
+      touchUntil = millis() + 2500;
+      expression = TOUCH;
+      
+      // Draw immediately and spawn a heart shower
+      drawCharacter();
+      for (int i = 0; i < 3; i++) {
+        spawnParticle('H');
+      }
+    }
+  } else {
+    touchStartTime = 0;
+    if (touchActive) {
+      touchActive = false;
+    }
   }
 }
 
@@ -1024,6 +1122,117 @@ void printDebugInfo() {
 }
 
 // =====================================================
+// WIFI CONFIGURATION PORTAL
+// =====================================================
+
+void drawWiFiConfigScreen() {
+  gfx->fillScreen(C_BACKGROUND);
+  
+  // Floating rounded card for instructions
+  gfx->fillRoundRect(15, 15, 290, 210, 8, C_CARD_BG);
+  gfx->drawRoundRect(15, 15, 290, 210, 8, C_CARD_BORDER);
+  
+  centerText("WiFi SETUP MODE", 160, 30, 2, C_GOLD);
+  
+  gfx->drawFastHLine(30, 55, 260, C_CARD_BORDER);
+  
+  centerText("1. Connect your phone/PC to:", 160, 75, 1, C_WHITE);
+  centerText("MOA-Plant-Bot", 160, 95, 2, C_TEAL);
+  
+  centerText("2. Open your web browser to:", 160, 130, 1, C_WHITE);
+  centerText("http://192.168.4.1", 160, 150, 2, C_MINT);
+  
+  centerText("Or wait for the automatic portal", 160, 185, 1, C_TEXT_MUTED);
+  centerText("Rebooting after submission...", 160, 205, 1, C_PINK);
+}
+
+void handleWifiConfigPortal() {
+  String html = "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
+  html += "<style>";
+  html += "body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }";
+  html += ".card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 24px; width: 100%; max-width: 360px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); box-sizing: border-box; }";
+  html += "h2 { color: #10b981; margin-top: 0; font-size: 24px; text-align: center; font-weight: 600; }";
+  html += "p { color: #94a3b8; font-size: 14px; text-align: center; margin-bottom: 24px; }";
+  html += ".form-group { margin-bottom: 16px; display: flex; flex-direction: column; }";
+  html += "label { margin-bottom: 6px; font-size: 14px; color: #cbd5e1; }";
+  html += "input, select { background: #0f172a; border: 1px solid #475569; border-radius: 6px; padding: 10px; color: #f8fafc; font-size: 16px; outline: none; transition: border-color 0.2s; }";
+  html += "input:focus, select:focus { border-color: #10b981; }";
+  html += "button { background: #10b981; color: #0f172a; border: none; border-radius: 6px; padding: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 12px; transition: background 0.2s; }";
+  html += "button:hover { background: #34d399; }";
+  html += ".footer { text-align: center; margin-top: 24px; font-size: 12px; color: #64748b; }";
+  html += "</style></head><body>";
+  html += "<div class='card'>";
+  html += "<h2>MOA Setup</h2>";
+  html += "<p>Configure your smart plant bot's Wi-Fi connection parameters below.</p>";
+  html += "<form method='POST' action='/save'>";
+  html += "<div class='form-group'>";
+  html += "<label>WiFi Network Name (SSID)</label>";
+  html += "<input type='text' name='ssid' placeholder='SSID' required>";
+  html += "</div>";
+  html += "<div class='form-group'>";
+  html += "<label>WiFi Password</label>";
+  html += "<input type='password' name='password' placeholder='••••••••' required>";
+  html += "</div>";
+  html += "<button type='submit'>Save and Connect</button>";
+  html += "</form>";
+  html += "</div>";
+  html += "<div class='footer'>MOA Interactive Plant Bot &copy; 2026</div>";
+  html += "</body></html>";
+  
+  server.send(200, "text/html", html);
+}
+
+void handleWifiConfigSave() {
+  String reqSSID = server.arg("ssid");
+  String reqPass = server.arg("password");
+  
+  Serial.println("Saving new WiFi credentials:");
+  Serial.print("SSID: "); Serial.println(reqSSID);
+  
+  preferences.begin("wifi-config", false);
+  preferences.putString("ssid", reqSSID);
+  preferences.putString("password", reqPass);
+  preferences.end();
+  
+  String html = "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
+  html += "<style>body { font-family: sans-serif; background: #0f172a; color: #f8fafc; text-align: center; padding: 40px; } h2 { color: #10b981; }</style></head><body>";
+  html += "<h2>Credentials Saved!</h2>";
+  html += "<p>MOA is now restarting and trying to connect to: <b>" + reqSSID + "</b></p>";
+  html += "<p>You can close this window now.</p>";
+  html += "</body></html>";
+  
+  server.send(200, "text/html", html);
+  delay(1000);
+  ESP.restart();
+}
+
+void handleNotFound() {
+  server.sendHeader("Location", "http://192.168.4.1/", true);
+  server.send(302, "text/plain", "");
+}
+
+void startWiFiConfigMode() {
+  wifiConfigMode = true;
+  Serial.println("Starting WiFi Configuration Mode...");
+  
+  drawWiFiConfigScreen();
+  
+  WiFi.disconnect();
+  WiFi.mode(WIFI_AP);
+  WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0));
+  WiFi.softAP("MOA-Plant-Bot");
+  
+  dnsServer.start(53, "*", IPAddress(192, 168, 4, 1));
+  
+  server.on("/", HTTP_GET, handleWifiConfigPortal);
+  server.on("/save", HTTP_POST, handleWifiConfigSave);
+  server.onNotFound(handleNotFound);
+  server.begin();
+  
+  Serial.println("Access Point 'MOA-Plant-Bot' Started. Captive portal running at 192.168.4.1");
+}
+
+// =====================================================
 // SETUP
 // =====================================================
 
@@ -1031,11 +1240,25 @@ void setup() {
   Serial.begin(115200);
   delay(500);
 
+  // Load saved Wi-Fi credentials from Preferences
+  preferences.begin("wifi-config", true);
+  wifiSSID = preferences.getString("ssid", WIFI_SSID);
+  wifiPassword = preferences.getString("password", WIFI_PASSWORD);
+  preferences.end();
+
+  Serial.print("Booting. Saved SSID: ");
+  Serial.println(wifiSSID);
+
   pinMode(TOUCH_PIN, INPUT);
   pinMode(SOIL_PIN, INPUT);
   pinMode(LDR_PIN, INPUT);
 
   dht.begin();
+  
+  // Initialize Touchscreen (XPT2046) using secondary HSPI bus
+  touchSPI.begin(T_CLK, T_DO, T_DIN, T_CS);
+  ts.begin(touchSPI);
+  ts.setRotation(1); // Set to match the landscape screen orientation
   
   // Seed random from noise pin
   randomSeed(analogRead(34));
@@ -1092,6 +1315,14 @@ void setup() {
 // =====================================================
 
 void loop() {
+  // If in WiFi Config Portal mode, process web/dns requests and halt regular loop
+  if (wifiConfigMode) {
+    dnsServer.processNextRequest();
+    server.handleClient();
+    delay(10);
+    return;
+  }
+
   unsigned long now = millis();
 
   // 1. Update Clock & WiFi status
@@ -1103,7 +1334,7 @@ void loop() {
     if (WiFi.status() != WL_CONNECTED) {
       Serial.println("WiFi disconnected. Reconnecting...");
       WiFi.disconnect();
-      WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+      WiFi.begin(wifiSSID.c_str(), wifiPassword.c_str());
     }
   }
 
@@ -1118,6 +1349,12 @@ void loop() {
     lastSlowSensorRead = now;
     readSlowSensors();
     updateSensorsUI(false);
+  }
+
+  // Send Telemetry on Timer
+  if (now - lastTelemetryTime >= TELEMETRY_INTERVAL) {
+    lastTelemetryTime = now;
+    sendTelemetry();
   }
 
   // 3. Evaluate Touch Interaction
