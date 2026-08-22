@@ -135,19 +135,52 @@ h1, h2, h3, h4, .brand-logo {
   height: 100%;
 }
 
-.grass-svg path {
-  transform-origin: bottom center;
-  animation: swayGrass 7s ease-in-out infinite alternate;
+.grass-blade {
+  animation: swayBlade ease-in-out infinite alternate;
 }
 
-.grass-svg path:first-child {
-  animation-duration: 9s;
-  animation-delay: -2s;
+@keyframes swayBlade {
+  0% { transform: rotate(-5deg) skewX(-3deg); }
+  100% { transform: rotate(5deg) skewX(3deg); }
 }
 
-@keyframes swayGrass {
-  0% { transform: skewX(-6deg) translateX(-15px); }
-  100% { transform: skewX(6deg) translateX(15px); }
+/* Floating Fireflies */
+.firefly {
+  position: fixed;
+  width: 5px;
+  height: 5px;
+  background: #fef08a; /* Soft bright yellow */
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  box-shadow: 0 0 10px 3px rgba(254, 240, 138, 0.8), 0 0 20px 5px rgba(254, 240, 138, 0.4);
+  opacity: 0;
+}
+
+.firefly-1 { left: 15%; bottom: 120px; animation: floatFirefly 12s ease-in-out infinite; }
+.firefly-2 { left: 35%; bottom: 160px; animation: floatFirefly 15s ease-in-out infinite 2s; }
+.firefly-3 { left: 55%; bottom: 100px; animation: floatFirefly 10s ease-in-out infinite 1s; }
+.firefly-4 { left: 70%; bottom: 140px; animation: floatFirefly 14s ease-in-out infinite 3s; }
+.firefly-5 { left: 88%; bottom: 110px; animation: floatFirefly 13s ease-in-out infinite 0.5s; }
+.firefly-6 { left: 45%; bottom: 130px; animation: floatFirefly 11s ease-in-out infinite 4s; }
+
+@keyframes floatFirefly {
+  0% {
+    transform: translate(0, 0) scale(0.8);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.9;
+    transform: translate(15px, -20px) scale(1.1);
+  }
+  70% {
+    opacity: 0.9;
+    transform: translate(-10px, -40px) scale(0.9);
+  }
+  100% {
+    transform: translate(5px, -60px) scale(0.7);
+    opacity: 0;
+  }
 }
 
 /* --- ORGANIC CREAM & SAGE GLASSMORPHISM --- */

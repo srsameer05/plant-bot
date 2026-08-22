@@ -1,10 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Smartphone, LayoutDashboard, Bell, BellOff, RefreshCw } from 'lucide-react';
 import MirrorDisplay from './components/MirrorDisplay';
 import Dashboard from './components/Dashboard';
 
 export default function App() {
   const [viewMode, setViewMode] = useState('dashboard'); // dashboard or mirror
+
+  // Generate 70 individual realistic grass blades using useMemo
+  const grassBlades = useMemo(() => {
+    return Array.from({ length: 70 }).map((_, i) => {
+      const x = (i * 14) + (Math.random() * 8); // Spread across 0 to 1000
+      const height = 80 + Math.random() * 65; // 80px to 145px
+      const width = 6 + Math.random() * 6; // width of blade base
+      const bend = (Math.random() - 0.5) * 35; // tip offset bend
+      const delay = -(Math.random() * 5); // out-of-sync animation delay
+      const duration = 4.5 + Math.random() * 3.5; // sway cycle duration
+      const colors = ['#2e5c25', '#38732e', '#458c3a', '#54a648', '#20401b', '#3b6f33'];
+      const color = colors[i % colors.length];
+      const opacity = 0.8 + Math.random() * 0.2;
+      return { x, height, width, bend, delay, duration, color, opacity };
+    });
+  }, []);
   
   // Real-time telemetry data state
   const [telemetry, setTelemetry] = useState({
@@ -385,19 +401,31 @@ export default function App() {
 
       {/* Swaying Grass Silhouette at Bottom */}
       <div className="bg-grass-container">
-        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="grass-svg">
-          <path 
-            d="M0,120 L0,60 L20,120 L40,50 L60,120 L80,70 L100,120 L120,40 L140,120 L160,55 L180,120 L200,65 L220,120 L240,45 L260,120 L280,60 L300,120 L320,35 L340,120 L360,50 L380,120 L400,65 L420,120 L440,55 L460,120 L480,30 L500,120 L520,50 L540,120 L560,60 L580,120 L600,45 L620,120 L640,65 L660,120 L680,55 L700,120 L720,35 L740,120 L760,50 L780,120 L800,65 L820,120 L840,55 L860,120 L880,30 L900,120 L920,50 L940,120 L960,60 L980,120 L1000,45 L1020,120 L1040,65 L1060,120 L1080,55 L1100,120 L1120,35 L1140,120 L1160,50 L1180,120 L1200,60 L1200,120 Z" 
-            fill="#5b9654"
-            opacity="0.12"
-          />
-          <path 
-            d="M0,120 L0,80 L15,120 L30,95 L45,120 L60,75 L75,120 L90,90 L105,120 L120,85 L135,120 L150,70 L165,120 L180,95 L195,120 L210,80 L225,120 L240,90 L255,120 L270,75 L285,120 L300,85 L315,120 L330,65 L345,120 L360,95 L375,120 L390,80 L405,120 L420,90 L435,120 L450,75 L465,120 L480,85 L495,120 L510,60 L525,120 L540,95 L555,120 L570,80 L585,120 L600,90 L615,120 L630,75 L645,120 L660,85 L675,120 L690,65 L705,120 L720,95 L735,120 L750,80 L765,120 L780,90 L795,120 L810,75 L825,120 L840,85 L855,120 L870,60 L885,120 L900,95 L915,120 L930,80 L945,120 L960,90 L975,120 L990,75 L1005,120 L1020,85 L1035,120 L1050,65 L1065,120 L1080,95 L1095,120 L1110,80 L1125,120 L1140,90 L1155,120 L1170,75 L1185,120 L1200,85 L1200,120 Z" 
-            fill="#2d5a27"
-            opacity="0.18"
-          />
+        <svg viewBox="0 0 1000 150" preserveAspectRatio="none" className="grass-svg">
+          {grassBlades.map((blade, idx) => (
+            <path
+              key={idx}
+              className="grass-blade"
+              d={`M ${blade.x},150 Q ${blade.x - blade.width / 2},${150 - blade.height / 2} ${blade.x + blade.bend},${150 - blade.height} Q ${blade.x + blade.width / 2},${150 - blade.height / 2} ${blade.x + blade.width},150 Z`}
+              fill={blade.color}
+              opacity={blade.opacity}
+              style={{
+                animationDelay: `${blade.delay}s`,
+                animationDuration: `${blade.duration}s`,
+                transformOrigin: `${blade.x}px 150px`
+              }}
+            />
+          ))}
         </svg>
       </div>
+
+      {/* Floating Fireflies above Grass */}
+      <div className="firefly firefly-1"></div>
+      <div className="firefly firefly-2"></div>
+      <div className="firefly firefly-3"></div>
+      <div className="firefly firefly-4"></div>
+      <div className="firefly firefly-5"></div>
+      <div className="firefly firefly-6"></div>
 
       <div className="app-container">
       
