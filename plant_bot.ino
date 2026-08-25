@@ -1316,7 +1316,7 @@ void drawWiFiConfigScreen() {
   centerText("http://192.168.4.1", 160, 150, 2, C_MINT);
   
   centerText("Or wait for the automatic portal", 160, 185, 1, C_TEXT_MUTED);
-  centerText("Rebooting after submission...", 160, 205, 1, C_PINK);
+  centerText("Status: Waiting for input...", 160, 205, 1, C_MINT);
 }
 
 void handleWifiConfigPortal() {
@@ -1362,6 +1362,15 @@ void handleWifiConfigSave() {
   Serial.println("Saving new WiFi credentials:");
   Serial.print("SSID: "); Serial.println(reqSSID);
   
+  // Clear instructions card and display saving and rebooting status on TFT screen
+  gfx->fillRoundRect(15, 15, 290, 210, 8, C_CARD_BG);
+  gfx->drawRoundRect(15, 15, 290, 210, 8, C_CARD_BORDER);
+  centerText("SAVING CREDENTIALS", 160, 45, 2, C_GOLD);
+  centerText("Connecting to WiFi:", 160, 90, 1, C_WHITE);
+  centerText(reqSSID.c_str(), 160, 115, 2, C_TEAL);
+  centerText("Rebooting after submission...", 160, 175, 1, C_PINK);
+  centerText("Please wait...", 160, 200, 1, C_TEXT_MUTED);
+
   preferences.begin("wifi-config", false);
   preferences.putString("ssid", reqSSID);
   preferences.putString("password", reqPass);
@@ -1375,7 +1384,7 @@ void handleWifiConfigSave() {
   html += "</body></html>";
   
   server.send(200, "text/html", html);
-  delay(1000);
+  delay(2000);
   ESP.restart();
 }
 

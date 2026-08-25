@@ -12,3 +12,7 @@ layout.json
 # OS files
 .DS_Store
 Thumbs.db
+
+# Web App dependencies and build outputs
+node_modules/
+dist/
