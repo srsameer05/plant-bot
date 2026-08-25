@@ -1007,7 +1007,6 @@ void chooseExpression() {
 void checkTouch() {
   if (wifiConfigMode) return;
 
-  bool currentTouch = digitalRead(TOUCH_PIN);
   bool screenTouched = false;
   TS_Point p;
 
@@ -1022,7 +1021,7 @@ void checkTouch() {
     }
   }
 
-  bool isTouched = currentTouch || screenTouched;
+  bool isTouched = screenTouched;
   static bool touchActive = false;
 
   if (isTouched) {
