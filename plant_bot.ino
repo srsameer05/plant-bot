@@ -1007,6 +1007,8 @@ void chooseExpression() {
 void checkTouch() {
   if (wifiConfigMode) return;
 
+  // Read physical push button on TOUCH_PIN (GPIO 5). Active-low: pressed = LOW
+  bool currentTouch = (digitalRead(TOUCH_PIN) == LOW);
   bool screenTouched = false;
   TS_Point p;
 
@@ -1021,7 +1023,7 @@ void checkTouch() {
     }
   }
 
-  bool isTouched = screenTouched;
+  bool isTouched = currentTouch || screenTouched;
   static bool touchActive = false;
 
   if (isTouched) {
@@ -1430,7 +1432,7 @@ void setup() {
   Serial.print("Booting. Saved SSID: ");
   Serial.println(wifiSSID);
 
-  pinMode(TOUCH_PIN, INPUT);
+  pinMode(TOUCH_PIN, INPUT_PULLUP);
   pinMode(SOIL_PIN, INPUT);
   pinMode(LDR_PIN, INPUT);
 
