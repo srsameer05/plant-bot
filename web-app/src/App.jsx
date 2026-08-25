@@ -86,6 +86,9 @@ export default function App() {
       Notification.requestPermission().then(permission => {
         setNotificationsAllowed(permission === 'granted');
       });
+    } else {
+      alert("Note: Browser-level system notifications require a secure connection (HTTPS) or localhost. However, in-app visual banners and sound chimes will still alert you on this screen!");
+      setNotificationsAllowed(true); // Fake enable so the UI badge updates to active
     }
   };
 
@@ -202,7 +205,7 @@ export default function App() {
             setShowBanner(true);
             playWarningChime();
 
-            if (Notification.permission === 'granted') {
+            if (window.Notification && Notification.permission === 'granted') {
               new Notification(title, { body: message });
             }
           }
@@ -253,7 +256,7 @@ export default function App() {
         setShowBanner(true);
         playWarningChime();
 
-        if (Notification.permission === 'granted') {
+        if (window.Notification && Notification.permission === 'granted') {
           new Notification(title, { body: message });
         }
       }
