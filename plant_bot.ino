@@ -10,6 +10,7 @@
 #include <WebServer.h>
 #include <DNSServer.h>
 
+void startWiFiConfigMode(); // Forward declaration to prevent compile errors
 
 // =====================================================
 // CONFIGURATION & PINS
@@ -383,18 +384,46 @@ void drawWiFiIcon(uint16_t color) {
 void connectWiFi() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(wifiSSID.c_str(), wifiPassword.c_str());
-  Serial.print("Connecting to WiFi...");
+  Serial.print("Connecting to WiFi: ");
+  Serial.println(wifiSSID);
   
+  // Clear the middle area of the screen for connection status
+  gfx->fillRect(20, 90, 280, 70, C_BACKGROUND);
+  centerText("Connecting to WiFi...", 160, 105, 1, C_WHITE);
+  centerText(wifiSSID.c_str(), 160, 125, 1, C_TEAL);
+
   unsigned long startAttempt = millis();
-  while (WiFi.status() != WL_CONNECTED && millis() - startAttempt < 6000) {
-    delay(200);
+  bool connected = false;
+  int dotCount = 0;
+  
+  while (millis() - startAttempt < 15000) { // 15 seconds timeout
+    if (WiFi.status() == WL_CONNECTED) {
+      connected = true;
+      break;
+    }
+    delay(500);
     Serial.print(".");
+    
+    // Draw dots to show progress on screen
+    String dots = "";
+    dotCount = (dotCount + 1) % 4;
+    for (int i = 0; i < dotCount; i++) dots += ".";
+    gfx->fillRect(40, 140, 240, 15, C_BACKGROUND);
+    centerText(dots.c_str(), 160, 145, 1, C_TEXT_MUTED);
   }
   
-  if (WiFi.status() == WL_CONNECTED) {
+  if (connected) {
     Serial.println(" Connected!");
+    gfx->fillRect(20, 90, 280, 70, C_BACKGROUND);
+    centerText("WiFi Connected!", 160, 115, 1, C_MINT);
+    delay(1000);
   } else {
-    Serial.println(" Timeout. Reconnecting in background.");
+    Serial.println(" Timeout.");
+    gfx->fillRect(20, 90, 280, 70, C_BACKGROUND);
+    centerText("Connection Failed!", 160, 105, 1, C_ALERT_RED);
+    centerText("Starting Setup Portal...", 160, 130, 1, C_TEXT_MUTED);
+    delay(2000);
+    startWiFiConfigMode();
   }
 }
 
@@ -1479,12 +1508,12 @@ void setup() {
   gfx->fillScreen(C_BACKGROUND);
   drawHeaderBase();
   
-  // Show connection status on screen
-  centerText("Connecting WiFi...", 160, 110, 1, C_TEXT_MUTED);
+  // Connect WiFi and fallback to config portal if connection fails
   connectWiFi();
-  
-  // Wipe temporary message
-  gfx->fillRect(40, 95, 240, 30, C_BACKGROUND);
+  if (wifiConfigMode) {
+    Serial.println("Entering WiFi configuration mode from boot due to connection timeout.");
+    return; // Exit setup early so we don't draw character/UI
+  }
   
   initFilters();
   updateHeader();
