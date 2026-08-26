@@ -84,6 +84,7 @@ WebServer server(80);
 DNSServer dnsServer;
 
 bool wifiConfigMode = false;
+bool pushButtonEnabled = true;
 unsigned long touchStartTime = 0;
 const unsigned long LONG_PRESS_DURATION = 3000; // 3 seconds to trigger WiFi config mode
 
@@ -1008,7 +1009,7 @@ void checkTouch() {
   if (wifiConfigMode) return;
 
   // Read physical push button on TOUCH_PIN (GPIO 5). Active-low: pressed = LOW
-  bool currentTouch = (digitalRead(TOUCH_PIN) == LOW);
+  bool currentTouch = pushButtonEnabled && (digitalRead(TOUCH_PIN) == LOW);
   bool screenTouched = false;
   TS_Point p;
 
@@ -1433,6 +1434,11 @@ void setup() {
   Serial.println(wifiSSID);
 
   pinMode(TOUCH_PIN, INPUT_PULLUP);
+  delay(50); // Let the internal pull-up stabilize
+  if (digitalRead(TOUCH_PIN) == LOW) {
+    pushButtonEnabled = false;
+    Serial.println("TOUCH_PIN (GPIO 5) detected LOW on startup. Disabling physical push button to prevent stuck config mode.");
+  }
   pinMode(SOIL_PIN, INPUT);
   pinMode(LDR_PIN, INPUT);
 
@@ -1549,6 +1555,7 @@ void loop() {
 
   // 3. Evaluate Touch Interaction
   checkTouch();
+  if (wifiConfigMode) return; // Prevent updating expressions/animations if config mode was triggered
 
   // 4. Update Expressions & Animation Frame Tick
   chooseExpression();
